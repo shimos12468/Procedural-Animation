@@ -14,14 +14,28 @@ public class ProceduralAnimation : MonoBehaviour
     public float speed;
     float splineLength;
     public bool enable = false;
+
+    public RopeMeshGenerator generator;
     void Start()
     {
-        splineLength = spline.CalculateLength(0);
+        //splineLength = spline.CalculateLength(0);
         for (int i = 0; i < length; i++)
         {
-            Instantiate(prefab, transform);
-            points.Add(transform.GetChild(i).gameObject);
+            var go = Instantiate(prefab, transform);
+            
+            if(i==0)go.transform.position = transform.position;
+
+            else
+            {
+                go.transform.position = points[i-1].transform.position-go.transform.lossyScale.z*Vector3.forward;
+            }
+            points.Add(go);
+            generator.ropePoints.Add(go.transform);
         }
+
+        
+
+
     }
     public Vector3 ConstrainDistance(Vector3 point, Vector3 anchor, float distance)
     {
