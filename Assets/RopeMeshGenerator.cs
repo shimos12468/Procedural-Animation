@@ -7,7 +7,7 @@ public class RopeMeshGenerator : MonoBehaviour
     public List<Transform> ropePoints;        // your rope cubes
     public int segmentsAround = 8;        // how many vertices around rope
     public float radius = 0.05f;
-
+    public GameObject ropeRoot;
     Mesh mesh;
 
     void Start()
@@ -77,7 +77,28 @@ public class RopeMeshGenerator : MonoBehaviour
                 tris.Add(ringStart + next);
             }
         }
+        for (int i = 0; i < ropePoints.Count - 1; i++)
+        {
+            Vector3 p1 = ropePoints[i].position;
+            Vector3 p2 = ropePoints[i + 1].position;
 
+
+            
+            Destroy(ropePoints[i].gameObject.GetComponent<CapsuleCollider>());
+            CapsuleCollider col = ropePoints[i].gameObject.AddComponent<CapsuleCollider>();
+            
+            // Calculate placement
+            Vector3 mid = (p1 + p2) * 0.5f;
+            Vector3 dir = (p2 - p1);
+            float dist = dir.magnitude;
+
+            ropePoints[i].transform.position = mid;
+            ropePoints[i].transform.rotation = Quaternion.LookRotation(dir);
+
+            col.direction = 2; // Z axis
+            col.height = dist;
+            col.radius = radius; // match your rope’s mesh radius
+        }
         mesh.Clear();
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
